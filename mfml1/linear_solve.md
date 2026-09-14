@@ -1,8 +1,6 @@
 import math
 
-# ---------------------------------------------------------
-# FUNCTION TO PRINT A MATRIX
-# ---------------------------------------------------------
+
 
 def print_matrix(matrix, title="Matrix"):
 
@@ -14,9 +12,6 @@ def print_matrix(matrix, title="Matrix"):
         print()
 
 
-# ---------------------------------------------------------
-# FUNCTION TO VALIDATE INPUT
-# ---------------------------------------------------------
 
 def validate_input(A, b):
 
@@ -40,9 +35,6 @@ def validate_input(A, b):
         )
 
 
-# ---------------------------------------------------------
-# FUNCTION TO CREATE AUGMENTED MATRIX
-# ---------------------------------------------------------
 
 def create_augmented_matrix(A, b):
 
@@ -63,11 +55,6 @@ def create_augmented_matrix(A, b):
 
     return augmented
 
-
-# ---------------------------------------------------------
-# GAUSSIAN ELIMINATION
-# WITH PARTIAL PIVOTING
-# ---------------------------------------------------------
 
 def gaussian_elimination(A, b):
 
@@ -170,10 +157,6 @@ def gaussian_elimination(A, b):
     return augmented
 
 
-# ---------------------------------------------------------
-# BACK SUBSTITUTION
-# ---------------------------------------------------------
-
 def back_substitution(upper_matrix):
 
     tolerance = 1e-10
@@ -215,10 +198,6 @@ def back_substitution(upper_matrix):
     return x
 
 
-# ---------------------------------------------------------
-# VERIFY SOLUTION
-# ---------------------------------------------------------
-
 def verify_solution(A, b, x):
 
     tolerance = 1e-8
@@ -247,10 +226,6 @@ def verify_solution(A, b, x):
 
     return verified, calculated
 
-
-# ---------------------------------------------------------
-# COMPLETE SOLVER
-# ---------------------------------------------------------
 
 def solve_system(A, b):
 
@@ -319,10 +294,6 @@ def solve_system(A, b):
     return solution
 
 
-# =========================================================
-# TEST SYSTEM 1
-# =========================================================
-
 A1 = [
     [2, 1, -1],
     [-3, -1, 2],
@@ -344,10 +315,6 @@ except ValueError as error:
     print("Error:", error)
 
 
-# =========================================================
-# TEST SYSTEM 2
-# =========================================================
-
 A2 = [
     [1, 2, 3],
     [2, -1, 1],
@@ -368,10 +335,6 @@ except ValueError as error:
 
     print("Error:", error)
 
-
-# =========================================================
-# TEST SYSTEM 3
-# =========================================================
 
 A3 = [
     [2, 1],

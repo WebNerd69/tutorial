@@ -1,12 +1,10 @@
-# PROJECT REPORT 1
-
 # Implementation of Gaussian Elimination Algorithm for Solving Linear Systems
 
-## 1. Project Title
+## Project Title
 
-**Implementation of Gaussian Elimination Algorithm for Solving Linear Systems**
+#### **Implementation of Gaussian Elimination Algorithm for Solving Linear Systems**
 
-## 2. Objective
+## Objective
 
 The objective of this project is to develop a generalized Python program for solving systems of linear equations using the **Gaussian Elimination algorithm**.
 
@@ -14,7 +12,7 @@ The program accepts a coefficient matrix and a right-hand-side (RHS) vector, for
 
 The program also implements **partial pivoting** to handle zero or very small pivot elements and includes verification and error handling.
 
-## 3. Introduction
+## Introduction
 
 A system of linear equations consists of two or more equations involving unknown variables. Such systems occur frequently in mathematics, engineering, computer science, statistics, and numerical computing.
 
@@ -34,7 +32,511 @@ Gaussian Elimination is a numerical method that transforms the system into an eq
 
 In this project, the algorithm is implemented using Python functions so that it can be used for general square matrices rather than only for a specific example.
 
-## 4. Mathematical Concept
+# ==================
+# Algorithm
+# ==================
+
+1. Read the coefficient matrix `A`.
+2. Read the RHS vector `B`.
+3. Validate the dimensions of `A` and `B`.
+4. Create the augmented matrix `[A|B]`.
+5. Select the pivot element.
+6. Apply partial pivoting.
+7. Swap rows if necessary.
+8. Eliminate elements below the pivot.
+9. Repeat the process for all pivot positions.
+10. Check for singular or inconsistent systems.
+11. Pass the upper triangular matrix to the back-substitution function.
+12. Calculate the unknown variables.
+13. Substitute the solution into the original equations.
+14. Verify the solution.
+
+
+# ==================
+# Psudocode
+# ==================
+
+FUNCTION gaussian_elimination(A, b):
+
+    Validate A
+    Validate b
+
+    Create augmented matrix [A | b]
+
+    FOR each pivot column i:
+
+        Find row with maximum absolute value
+        in column i from rows i to n-1
+
+        IF pivot is zero:
+            Report singular or non-unique system
+
+        Swap current row with pivot row
+
+        FOR each row j below row i:
+
+            Calculate elimination factor
+
+            FOR each column k:
+                Update augmented[j][k]
+
+    Return upper triangular matrix
+
+
+FUNCTION back_substitution(U):
+
+    Create solution vector x
+
+    FOR i from n-1 down to 0:
+
+        Calculate sum of known terms
+
+        IF diagonal element is zero:
+            Report zero pivot
+
+        Calculate x[i]
+
+    RETURN x
+
+
+FUNCTION verify_solution(A, b, x):
+
+    Calculate A × x
+
+    Compare A × x with b
+
+    IF values match:
+        Return verified
+    ELSE:
+        Return verification failed
+
+
+MAIN:
+
+    Define first system
+
+    Display input
+
+    Call gaussian_elimination()
+
+    Display augmented matrix
+
+    Display matrix after elimination
+
+    Call back_substitution()
+
+    Display solution
+
+    Verify solution
+
+
+    Define second system
+
+    Repeat above steps
+
+# ==================
+# Source code
+# ==================
+
+```python
+import math
+
+# ---------------------------------------------------------
+# FUNCTION TO PRINT A MATRIX
+# ---------------------------------------------------------
+
+def print_matrix(matrix, title="Matrix"):
+
+    print("\n" + title + ":")
+
+    for row in matrix:
+        for value in row:
+            print(f"{value:8.2f}", end=" ")
+        print()
+
+
+# ---------------------------------------------------------
+# FUNCTION TO VALIDATE INPUT
+# ---------------------------------------------------------
+
+def validate_input(A, b):
+
+    # Check if matrix is empty
+    if len(A) == 0:
+        raise ValueError("Coefficient matrix cannot be empty.")
+
+    n = len(A)
+
+    # Check if matrix is square
+    for row in A:
+        if len(row) != n:
+            raise ValueError(
+                "Coefficient matrix must be square."
+            )
+
+    # Check RHS size
+    if len(b) != n:
+        raise ValueError(
+            "RHS vector size must match matrix size."
+        )
+
+
+# ---------------------------------------------------------
+# FUNCTION TO CREATE AUGMENTED MATRIX
+# ---------------------------------------------------------
+
+def create_augmented_matrix(A, b):
+
+    augmented = []
+
+    for i in range(len(A)):
+
+        row = []
+
+        # Add elements of A
+        for j in range(len(A[i])):
+            row.append(float(A[i][j]))
+
+        # Add RHS value
+        row.append(float(b[i]))
+
+        augmented.append(row)
+
+    return augmented
+
+
+# ---------------------------------------------------------
+# GAUSSIAN ELIMINATION
+# WITH PARTIAL PIVOTING
+# ---------------------------------------------------------
+
+def gaussian_elimination(A, b):
+
+    tolerance = 1e-10
+
+    # Validate input
+    validate_input(A, b)
+
+    # Create augmented matrix
+    augmented = create_augmented_matrix(A, b)
+
+    n = len(A)
+
+    # Go through each column
+    for i in range(n):
+
+        # -------------------------------------------------
+        # FIND THE BEST PIVOT
+        # -------------------------------------------------
+
+        pivot_row = i
+
+        for j in range(i + 1, n):
+
+            if abs(augmented[j][i]) > abs(augmented[pivot_row][i]):
+                pivot_row = j
+
+        # Check if pivot is zero
+        if abs(augmented[pivot_row][i]) < tolerance:
+            continue
+
+        # -------------------------------------------------
+        # SWAP ROWS
+        # -------------------------------------------------
+
+        if pivot_row != i:
+
+            temp = augmented[i]
+            augmented[i] = augmented[pivot_row]
+            augmented[pivot_row] = temp
+
+        # -------------------------------------------------
+        # ELIMINATION
+        # -------------------------------------------------
+
+        for j in range(i + 1, n):
+
+            # If value is already zero, skip
+            if abs(augmented[j][i]) < tolerance:
+                augmented[j][i] = 0
+                continue
+
+            # Calculate elimination factor
+            factor = augmented[j][i] / augmented[i][i]
+
+            # Subtract pivot row
+            for k in range(i, n + 1):
+
+                augmented[j][k] = (
+                    augmented[j][k]
+                    - factor * augmented[i][k]
+                )
+
+            # Remove very small floating-point errors
+            if abs(augmented[j][i]) < tolerance:
+                augmented[j][i] = 0
+
+    # -----------------------------------------------------
+    # CHECK FOR SINGULAR / INCONSISTENT SYSTEM
+    # -----------------------------------------------------
+
+    for i in range(n):
+
+        all_zero = True
+
+        for j in range(n):
+
+            if abs(augmented[i][j]) >= tolerance:
+                all_zero = False
+                break
+
+        # Example:
+        # 0 0 0 | 5
+        # means no solution
+
+        if all_zero and abs(augmented[i][n]) >= tolerance:
+            raise ValueError(
+                "System is inconsistent and has no solution."
+            )
+
+        # Example:
+        # 0 0 0 | 0
+        # means infinitely many solutions
+
+        if all_zero and abs(augmented[i][n]) < tolerance:
+            raise ValueError(
+                "System does not have a unique solution."
+            )
+
+    return augmented
+
+
+# ---------------------------------------------------------
+# BACK SUBSTITUTION
+# ---------------------------------------------------------
+
+def back_substitution(upper_matrix):
+
+    tolerance = 1e-10
+
+    n = len(upper_matrix)
+
+    # Create solution array
+    x = []
+
+    for i in range(n):
+        x.append(0.0)
+
+    # Start from last equation
+    for i in range(n - 1, -1, -1):
+
+        # Get pivot
+        pivot = upper_matrix[i][i]
+
+        # Check for zero pivot
+        if abs(pivot) < tolerance:
+            raise ValueError(
+                "Zero pivot encountered during back substitution."
+            )
+
+        # Start with RHS value
+        sum_value = upper_matrix[i][n]
+
+        # Subtract already known values
+        for j in range(i + 1, n):
+
+            sum_value = (
+                sum_value
+                - upper_matrix[i][j] * x[j]
+            )
+
+        # Calculate unknown
+        x[i] = sum_value / pivot
+
+    return x
+
+
+# ---------------------------------------------------------
+# VERIFY SOLUTION
+# ---------------------------------------------------------
+
+def verify_solution(A, b, x):
+
+    tolerance = 1e-8
+
+    calculated = []
+
+    # Calculate A × x
+    for i in range(len(A)):
+
+        value = 0
+
+        for j in range(len(x)):
+
+            value = value + A[i][j] * x[j]
+
+        calculated.append(value)
+
+    # Compare calculated values with b
+    verified = True
+
+    for i in range(len(b)):
+
+        if abs(calculated[i] - b[i]) > tolerance:
+            verified = False
+            break
+
+    return verified, calculated
+
+
+# ---------------------------------------------------------
+# COMPLETE SOLVER
+# ---------------------------------------------------------
+
+def solve_system(A, b):
+
+    print_matrix(
+        A,
+        "Input Coefficient Matrix"
+    )
+
+    print("\nRHS Vector:")
+    print(b)
+
+    # Create and display augmented matrix
+    augmented = create_augmented_matrix(A, b)
+
+    print_matrix(
+        augmented,
+        "Augmented Matrix [A | b]"
+    )
+
+    # Gaussian elimination
+    upper_matrix = gaussian_elimination(A, b)
+
+    print_matrix(
+        upper_matrix,
+        "Matrix After Forward Elimination"
+    )
+
+    # Back substitution
+    solution = back_substitution(upper_matrix)
+
+    print("\nSolution:")
+
+    for i in range(len(solution)):
+
+        print(
+            "x" + str(i + 1) + " = "
+            + f"{solution[i]:.2f}"
+        )
+
+    # Verification
+    verified, calculated = verify_solution(
+        A,
+        b,
+        solution
+    )
+
+    print("\nVerification:")
+
+    print("Calculated A x x:")
+
+    for value in calculated:
+        print(f"{value:.2f}", end=" ")
+
+    print("\nOriginal RHS b:")
+
+    for value in b:
+        print(f"{value:.2f}", end=" ")
+
+    print()
+
+    if verified:
+        print("\nResult: Solution verified successfully.")
+    else:
+        print("\nResult: Verification failed.")
+
+    return solution
+
+
+# =========================================================
+# TEST SYSTEM 1
+# =========================================================
+
+A1 = [
+    [2, 1, -1],
+    [-3, -1, 2],
+    [-2, 1, 2]
+]
+
+b1 = [8, -11, -3]
+
+print("\n" + "=" * 60)
+print("SYSTEM 1")
+print("=" * 60)
+
+try:
+
+    solution1 = solve_system(A1, b1)
+
+except ValueError as error:
+
+    print("Error:", error)
+
+
+# =========================================================
+# TEST SYSTEM 2
+# =========================================================
+
+A2 = [
+    [1, 2, 3],
+    [2, -1, 1],
+    [3, 1, -2]
+]
+
+b2 = [14, 3, -1]
+
+print("\n" + "=" * 60)
+print("SYSTEM 2")
+print("=" * 60)
+
+try:
+
+    solution2 = solve_system(A2, b2)
+
+except ValueError as error:
+
+    print("Error:", error)
+
+
+# =========================================================
+# TEST SYSTEM 3
+# =========================================================
+
+A3 = [
+    [2, 1],
+    [1, 3]
+]
+
+b3 = [5, 6]
+
+print("\n" + "=" * 60)
+print("SYSTEM 3")
+print("=" * 60)
+
+try:
+
+    solution3 = solve_system(A3, b3)
+
+except ValueError as error:
+
+    print("Error:", error)
+```
+
+# ==================
+# Mathematical Concept
+# ==================
 
 Consider the following system:
 
@@ -92,7 +594,7 @@ B=
 \end{bmatrix}
 \]
 
-## 5. Augmented Matrix
+## Augmented Matrix
 
 The coefficient matrix and RHS vector are combined to form the augmented matrix:
 
@@ -114,7 +616,7 @@ For the above system:
 
 Gaussian Elimination applies elementary row operations to convert this matrix into upper triangular form.
 
-## 6. Elementary Row Operations
+## Elementary Row Operations
 
 The following row operations are used:
 
@@ -144,7 +646,7 @@ A multiple of one row is subtracted from another row.
 
 These operations preserve the solution of the system.
 
-## 7. Partial Pivoting
+## Partial Pivoting
 
 Partial pivoting is used to handle zero or very small pivot elements.
 
@@ -166,7 +668,7 @@ The first pivot is zero. Therefore, the program searches the rows below it and s
 
 This improves the numerical stability of the algorithm.
 
-## 8. Forward Elimination
+## Forward Elimination
 
 Forward elimination converts the augmented matrix into upper triangular form.
 
@@ -186,7 +688,7 @@ u_{11}&u_{12}&u_{13}&\cdots&c_1\\
 
 Once this form is obtained, the variables can be calculated starting from the last equation.
 
-## 9. Back Substitution
+## Back Substitution
 
 Back substitution is implemented as a separate function.
 
@@ -216,25 +718,9 @@ c_i-\sum_{j=i+1}^{n}u_{ij}x_j
 u_{ii}
 }
 \]
-
-## 10. Algorithm
-
-1. Read the coefficient matrix `A`.
-2. Read the RHS vector `B`.
-3. Validate the dimensions of `A` and `B`.
-4. Create the augmented matrix `[A|B]`.
-5. Select the pivot element.
-6. Apply partial pivoting.
-7. Swap rows if necessary.
-8. Eliminate elements below the pivot.
-9. Repeat the process for all pivot positions.
-10. Check for singular or inconsistent systems.
-11. Pass the upper triangular matrix to the back-substitution function.
-12. Calculate the unknown variables.
-13. Substitute the solution into the original equations.
-14. Verify the solution.
-
-## 11. Program Structure
+# ==================
+# Program Structure
+# ==================
 
 | Function | Purpose |
 |---|---|
@@ -248,7 +734,11 @@ u_{ii}
 
 This modular approach makes the program reusable for different systems.
 
-## 12. Test Case 1
+# ==================
+# Test cases
+# ==================
+
+## Test Case 1
 
 The first system used for testing is:
 
@@ -320,7 +810,7 @@ AX=B
 
 and the solution is verified successfully.
 
-## 13. Test Case 2
+## Test Case 2
 
 The second system is:
 
@@ -385,9 +875,9 @@ Therefore:
 \]
 
 and the solution is verified.
-
-## 14. Additional Partial Pivoting Test
-
+# ==================
+# Additional Partial Pivoting Test
+# ==================
 To demonstrate partial pivoting, the following system can be used:
 
 \[
@@ -432,8 +922,9 @@ The solution is:
 
 The first pivot is zero, so the program must exchange rows before performing elimination. This demonstrates the partial pivoting feature.
 
-## 15. Error Handling
-
+# ==================
+# Error Handling
+# ==================
 The program includes error handling for the following conditions:
 
 ### Invalid matrix dimensions
@@ -464,7 +955,7 @@ If a row becomes:
 
 where \(c\neq0\), the system has no solution.
 
-## 16. Verification
+## Verification
 
 The program verifies the calculated solution by computing:
 
@@ -485,9 +976,9 @@ Because floating-point calculations can produce very small numerical errors, a t
 \]
 
 If this condition is satisfied for every equation, the solution is considered verified.
-
-## 17. Results and Observations
-
+# ==================
+# Results and Observations
+# ==================
 The implemented Gaussian Elimination algorithm successfully solves different systems of linear equations.
 
 The program successfully performs:
@@ -504,8 +995,17 @@ The use of separate functions makes the implementation modular and allows the sa
 
 The partial pivoting test also demonstrates that the program can handle a zero pivot by exchanging rows.
 
-## 18. Learning Outcomes
+# ==================
+# Output
+# ==================
 
+![System1](system1.jpeg)
+![System2](system2.jpeg)
+![System3](system3.jpeg)
+
+# ==================
+# Learning Outcomes
+# ==================
 After completing this project, the following concepts were understood and implemented:
 
 - Gaussian Elimination.
@@ -518,9 +1018,9 @@ After completing this project, the following concepts were understood and implem
 - Verification of calculated solutions.
 - Error handling.
 - Generalized numerical programming.
-
-## 19. Conclusion
-
+# ==================
+# Conclusion
+# ==================
 The project successfully implements the Gaussian Elimination algorithm using Python.
 
 The program is generalized and modular and can solve different square systems of linear equations. It forms an augmented matrix, performs forward elimination with partial pivoting, obtains the solution using back substitution, and verifies the result against the original system.
